@@ -8,9 +8,15 @@ if __name__ == '__main__':
     # this function isn't supported on windows
     # setcbreak(stdin.fileno())
     if len(argv) < 3:
+        # save path example: "C:/collected"
         # modes are "m" for manual key presses and "v" for video capture.
-        print(f"Usage: {argv[0]} <save path> <mode>")
+        # limit is for setting the max number of images taken.
+        print(f"Usage: {argv[0]} <save path> <mode> [limit]")
         exit(1)
+    if len(argv) >= 4:
+        image_limit = int(argv[3])
+    else:
+        image_limit = 0
 
     cap = cv.VideoCapture(0)
     if not cap.isOpened():
@@ -23,6 +29,10 @@ if __name__ == '__main__':
     while True:
         ret, frame = cap.read()
         if not ret:
+            break
+
+        if not image_limit == 0 and i >= image_limit:
+            print("\nStopped program on image_limit.")
             break
 
         # manual mode, press "e" to save image, "q" to quit.
@@ -41,7 +51,7 @@ if __name__ == '__main__':
             frame_count += 1
             if frame_count % 1 == 0:  # Change this number to capture at different intervals
                 cv.imwrite(os.path.join(argv[1], f"{i}.png"), frame)
-                print(f"\rCreated {i} images", end="")
+                print(f"\rCreated {i+1} images", end="")
                 i += 1
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
