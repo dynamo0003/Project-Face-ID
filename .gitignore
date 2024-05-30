@@ -1,0 +1,9 @@
+env/
+.env/
+venv/
+.venv/
+virtualenv/
+.virtualenv/
+
+datasets/
+models/
