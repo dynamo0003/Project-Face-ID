@@ -4,3 +4,6 @@ venv/
 .venv/
 virtualenv/
 .virtualenv/
+
+datasets/
+models/

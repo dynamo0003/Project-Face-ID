@@ -39,14 +39,12 @@ class Model:
         self.model.load_state_dict(torch.load(path))
 
     def train(self, path: str, epochs: int, batch_size: int, learning_rate: float):
-        print(f"Training model")
-        self.model.train()
-
         dataset = ImageFolder(path, transform=transform)
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
 
+        self.model.train()
         for epoch in range(epochs):
             loss_avg = 0
 
@@ -54,12 +52,10 @@ class Model:
                 images = images.to(self.device)
                 labels = labels.to(self.device)
 
-                # Forward pass
                 outputs = self.model(images)
                 loss = criterion(outputs, labels)
-                loss_avg += loss
+                loss_avg += loss.item()
 
-                # Backward pass
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
@@ -73,9 +69,7 @@ class Model:
             loss_avg = 0
 
     def eval(self, path: str):
-        print("Evaluating image")
         self.model.eval()
-
         with torch.no_grad():
             image = Image.open(path).convert("RGB")
             image = transforms.ToTensor()(image).unsqueeze(0).to(self.device)
