@@ -1,84 +1,124 @@
-import argparse
+import warnings as warns
+
+import click
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="A CLI interface for our face recognition model",
-    )
+@click.group(
+    help="A CLI interface for our face recognition model",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+def cli():
+    pass
 
-    parser.add_argument("model", help="path to the model data")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        "-t",
-        "--train",
-        metavar="DATASET",
-        help="train the model on a dataset",
-    )
-    group.add_argument(
-        "-i",
-        "--image",
-        metavar="IMAGE",
-        help="evaluate an image",
-    )
-    parser.add_argument(
-        "-e",
-        "--epochs",
-        metavar="COUNT",
-        type=int,
-        default=10,
-        help="specify the number of epochs",
-    )
-    parser.add_argument(
-        "-b",
-        "--batch-size",
-        metavar="SIZE",
-        type=int,
-        default=100,
-        help="specify the batch size",
-    )
-    parser.add_argument(
-        "-l",
-        "--learning-rate",
-        metavar="RATE",
-        type=float,
-        default=0.001,
-        help="specify the learning rate",
-    )
-    parser.add_argument(
-        "-c",
-        "--cpu",
-        action="store_true",
-        help="use the CPU",
-    )
-    parser.add_argument(
-        "-w",
-        "--warnings",
-        action="store_true",
-        help="show warnings",
-    )
 
-    return parser.parse_args()
+@cli.command(
+    help="Train the model on a dataset",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+@click.option(
+    "-m",
+    "--model",
+    help="Path to save trained model to",
+    required=True,
+)
+@click.option(
+    "-d",
+    "--dataset",
+    help="Path to dataset folder",
+    required=True,
+)
+@click.option(
+    "-c",
+    "--classes",
+    help="Number of classes (Default: 2)",
+    default=2,
+)
+@click.option(
+    "-e",
+    "--epochs",
+    type=int,
+    help="Number of epochs (Default: 10)",
+    default=10,
+)
+@click.option(
+    "-b",
+    "--batch-size",
+    type=int,
+    help="Batch size (Default: 100)",
+    default=100,
+)
+@click.option(
+    "-l",
+    "--learning-rate",
+    type=float,
+    help="Learning rate (Default: 0.001)",
+    default=0.001,
+)
+@click.option(
+    "-C",
+    "--cpu",
+    help="Use CPU",
+    is_flag=True,
+)
+@click.option(
+    "-w",
+    "--warnings",
+    help="Show warnings",
+    is_flag=True,
+)
+def train(model, dataset, classes, epochs, batch_size, learning_rate, cpu, warnings):
+    from model import Model
+
+    if not warnings:
+        warns.filterwarnings("ignore")
+    fr_model = Model(classes, cpu)
+    fr_model.train(dataset, epochs, batch_size, learning_rate)
+    fr_model.save(model)
+
+
+@cli.command(
+    help="Evaluate an image using a trained model",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+@click.option(
+    "-m",
+    "--model",
+    help="Path to trained model",
+    required=True,
+)
+@click.option(
+    "-i",
+    "--image",
+    help="Path to image",
+    required=True,
+)
+@click.option(
+    "-c",
+    "--classes",
+    help="Number of classes (Default: 2)",
+    default=2,
+)
+@click.option(
+    "-C",
+    "--cpu",
+    help="Use CPU",
+    is_flag=True,
+)
+@click.option(
+    "-w",
+    "--warnings",
+    help="Show warnings",
+    is_flag=True,
+)
+def eval(model, image, classes, cpu, warnings):
+    from model import Model
+
+    if not warnings:
+        warns.filterwarnings("ignore")
+    fr_model = Model(classes, cpu)
+    fr_model.load(model)
+    fr_model.eval(image)
 
 
 if __name__ == "__main__":
-    args = parse_args()
-
-    import warnings
-
-    from model import Model
-
-    if not args.warnings:
-        warnings.filterwarnings("ignore")
-
-    model = Model(4, use_cpu=args.cpu)
-    if args.train:
-        model.train(
-            args.train,
-            args.epochs,
-            args.batch_size,
-            args.learning_rate,
-        )
-        model.save(args.model)
-    else:
-        model.load(args.model)
-        model.eval(args.image)
+    cli()

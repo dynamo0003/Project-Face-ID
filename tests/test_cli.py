@@ -4,12 +4,12 @@ from click.testing import CliRunner
 
 sys.path.append("src")
 
-import cli2
+import cli
 
 
 def test_cli_help():
-    out1 = CliRunner().invoke(cli2.cli)
-    out2 = CliRunner().invoke(cli2.cli, ["-h"])
+    out1 = CliRunner().invoke(cli.cli)
+    out2 = CliRunner().invoke(cli.cli, ["-h"])
     assert out1.exit_code == out2.exit_code == 0
     print(out1.output)
     assert out1.output == out2.output
@@ -23,7 +23,7 @@ def test_cli_help():
 
 
 def test_cli_train():
-    out = CliRunner().invoke(cli2.train)
+    out = CliRunner().invoke(cli.train)
     assert out.exit_code != 0
     assert "Usage: train [OPTIONS]" in out.output
     assert "Try 'train -h' for help." in out.output
@@ -31,7 +31,7 @@ def test_cli_train():
 
 
 def test_cli_train_help():
-    out = CliRunner().invoke(cli2.train, ["-h"])
+    out = CliRunner().invoke(cli.train, ["-h"])
     assert out.exit_code == 0
     assert "Usage: train [OPTIONS]" in out.output
     assert "Train the model on a dataset" in out.output
@@ -48,7 +48,7 @@ def test_cli_train_help():
 
 
 def test_cli_eval():
-    out = CliRunner().invoke(cli2.eval)
+    out = CliRunner().invoke(cli.eval)
     assert out.exit_code != 0
     assert "Usage: eval [OPTIONS]" in out.output
     assert "Try 'eval -h' for help." in out.output
@@ -56,7 +56,7 @@ def test_cli_eval():
 
 
 def test_cli_eval_help():
-    out = CliRunner().invoke(cli2.eval, ["-h"])
+    out = CliRunner().invoke(cli.eval, ["-h"])
     assert out.exit_code == 0
     assert "Usage: eval [OPTIONS]" in out.output
     assert "Evaluate an image using a trained model" in out.output
