@@ -76,8 +76,6 @@ class CustomRandomNoise:
 
 IMAGE_SIZE = (224, 224)
 
-# TODO potentially add pickle array functionality
-
 def get_transforms(skip_extra=False):
     t = transforms
     trans = []
@@ -111,7 +109,7 @@ def get_transforms(skip_extra=False):
         # Custom gaussian blur (1%)
         if random.randint(0, 99) == 0:
             trans.append(CustomGaussianBlur(kernel_size=5))
-        # Custom gaussian blur (1%)
+        # Custom noise (1%)
         if random.randint(0, 99) == 0:
             trans.append(CustomRandomNoise(mean=0, std=0.05))
 
