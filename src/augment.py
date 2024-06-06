@@ -35,6 +35,8 @@ def get_transforms(skip_extra=False):
             trans.append(t.RandomResizedCrop(IMAGE_SIZE, scale=(0.75, 1)))
         else:
             trans.append(t.CenterCrop(IMAGE_SIZE))
+        # Rotate randomly by 20°
+        trans.append(t.RandomRotation(20, fill=128))
 
 
     trans.append(t.Resize(IMAGE_SIZE))
