@@ -8,6 +8,14 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.transforms.functional import to_pil_image
 
+class CustomTransform(transforms.Transform):
+    def __init__(self, transform_func):
+        super().__init__()
+        self.transform_func = transform_func
+
+    def __call__(self, img):
+        return self.transform_func(img)
+
 IMAGE_SIZE = (224, 224)
 
 # TODO add more transforms
