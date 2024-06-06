@@ -7,3 +7,4 @@ virtualenv/
 
 datasets/
 models/
+.idea/workspace.xml
