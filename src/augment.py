@@ -62,10 +62,12 @@ if __name__ == "__main__":
     start_time = time()
     for i in range(count):
         image = Image.open(os.path.join(argv[1], random.choice(images)))
-        image = transforms.ToTensor()(image.convert("RGB"))
+        image = transforms.ToTensor()(image.convert("RGB")).to(device)
         image = to_pil_image(get_transforms()(image))
         image.save(os.path.join(argv[2], f"{i}.png"))
         print(f"\r{i + 1}/{count}", end="")
         stdout.flush()
 
+    minutes, seconds = map(int, divmod(time() - start_time, 60))
+    print(f"\nTook {minutes}:{seconds:02}")
     print()
