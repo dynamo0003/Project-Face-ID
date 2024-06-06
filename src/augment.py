@@ -19,9 +19,48 @@ class CustomAffine:
     def __call__(self, img):
         return F.affine(img, self.angle, self.translate, self.scale, self.shear)
 
+class CustomPerspective:
+    def __init__(self, distortion_scale=0.5, p=0.5, zoom_factor=1):
+        self.distortion_scale = distortion_scale
+        self.p = p
+        self.zoom_factor = zoom_factor
+
+    def __call__(self, img):
+        if random.uniform(0, 1) > self.p:
+            return img
+
+        startpoints, endpoints = self.get_params(IMAGE_SIZE, self.distortion_scale, self.zoom_factor)
+        return F.perspective(img, startpoints, endpoints)
+
+    @staticmethod
+    def get_params(IMAGE_SIZE, distortion_scale, zoom_factor):
+        width = IMAGE_SIZE[0]
+        height = IMAGE_SIZE[1]
+        half_height = width / 2
+        half_width = height / 2
+
+        # Compute the zoomed in corners
+        zoomed_topleft = [half_width * (1 - 1/zoom_factor), half_height * (1 - 1/zoom_factor)]
+        zoomed_topright = [width - half_width * (1 - 1/zoom_factor), half_height * (1 - 1/zoom_factor)]
+        zoomed_botright = [width - half_width * (1 - 1/zoom_factor), height - half_height * (1 - 1/zoom_factor)]
+        zoomed_botleft = [half_width * (1 - 1/zoom_factor), height - half_height * (1 - 1/zoom_factor)]
+
+        # Apply distortion within the zoomed region
+        topleft = [zoomed_topleft[0] + random.uniform(0, distortion_scale) * half_width,
+                   zoomed_topleft[1] + random.uniform(0, distortion_scale) * half_height]
+        topright = [zoomed_topright[0] - random.uniform(0, distortion_scale) * half_width,
+                    zoomed_topright[1] + random.uniform(0, distortion_scale) * half_height]
+        botright = [zoomed_botright[0] - random.uniform(0, distortion_scale) * half_width,
+                    zoomed_botright[1] - random.uniform(0, distortion_scale) * half_height]
+        botleft = [zoomed_botleft[0] + random.uniform(0, distortion_scale) * half_width,
+                   zoomed_botleft[1] - random.uniform(0, distortion_scale) * half_height]
+
+        startpoints = [[0, 0], [width, 0], [width, height], [0, height]]
+        endpoints = [topleft, topright, botright, botleft]
+        return startpoints, endpoints
+
 IMAGE_SIZE = (224, 224)
 
-# TODO add more transforms
 # TODO potentially add pickle array functionality
 
 def get_transforms(skip_extra=False):
@@ -51,6 +90,9 @@ def get_transforms(skip_extra=False):
         # Custom affine and shear (12.5%)
         if random.randint(0, 7) == 0:
             trans.append(CustomAffine(translate=(10, 10), scale=1, shear=random.randint(-10, 10)))
+        # Custom perspective (12.5%) -- also zooms slightly to mitigate black borders
+        if random.randint(0, 7) == 0:
+            trans.append(CustomPerspective(distortion_scale=0.2, p=1, zoom_factor=0.9))
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
