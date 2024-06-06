@@ -4,6 +4,7 @@ venv/
 .venv/
 virtualenv/
 .virtualenv/
+.idea/workspace.xml
 
 datasets/
 models/
