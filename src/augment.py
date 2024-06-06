@@ -52,6 +52,9 @@ if __name__ == "__main__":
         random.seed(seed)
         torch.manual_seed(seed)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Device: {device}")
+
     os.makedirs(argv[2], exist_ok=True)
     images = os.listdir(argv[1])
 
