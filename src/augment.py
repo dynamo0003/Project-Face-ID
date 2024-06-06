@@ -21,6 +21,8 @@ def get_transforms(skip_extra=False):
         # Flip horizontally (50% chance)
         trans.append(t.RandomHorizontalFlip())
         # Grayscale (10% chance)
+        if not random.randint(0, 4):
+            trans.append(t.Grayscale(num_output_channels=1))
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)

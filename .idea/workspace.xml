@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ad6e531-c61d-4889-9810-b0691c7de96e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/augment.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/augment.py" afterDir="false" />
-    </list>
+    <list default="true" id="3ad6e531-c61d-4889-9810-b0691c7de96e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -93,7 +90,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1717662316437</updated>
-      <workItem from="1717662324107" duration="1372000" />
+      <workItem from="1717662324107" duration="1784000" />
     </task>
     <servers />
   </component>
