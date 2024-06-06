@@ -49,7 +49,7 @@ if __name__ == '__main__':
         elif argv[2] == "v":
             cv.imshow("0", frame)
             frame_count += 1
-            if frame_count % 1 == 0:  # Change this number to capture at different intervals
+            if frame_count % 10 == 0:  # Change this number to capture at different intervals
                 cv.imwrite(os.path.join(argv[1], f"{i}.png"), frame)
                 print(f"\rCreated {i+1} images", end="")
                 i += 1
