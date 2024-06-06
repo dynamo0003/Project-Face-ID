@@ -23,12 +23,14 @@ def get_transforms(skip_extra=False):
         # Grayscale (10% chance)
         if not random.randint(0, 4):
             trans.append(t.Grayscale(num_output_channels=1))
-        # Hue (66% chance)
-        if random.randint(0, 2):
+        # Hue (10% chance)
+        if random.randint(0, 4):
             trans.append(t.ColorJitter(hue=0.1))
         # Brigthness, contrast, saturation (1-3 times)
         for _ in range(random.randint(0, 2)):
-            trans.append(t.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5))
+            if random.randint(0, 4) == 0:  # 20% chance
+                trans.append(t.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3))
+
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
