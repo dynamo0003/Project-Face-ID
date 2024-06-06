@@ -30,6 +30,11 @@ def get_transforms(skip_extra=False):
         for _ in range(random.randint(0, 2)):
             if random.randint(0, 4) == 0:  # 20% chance
                 trans.append(t.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3))
+        # Crop area where size is at least 3/4 or crop around the center
+        if random.randint(0, 100):
+            trans.append(t.RandomResizedCrop(IMAGE_SIZE, scale=(0.75, 1)))
+        else:
+            trans.append(t.CenterCrop(IMAGE_SIZE))
 
 
     trans.append(t.Resize(IMAGE_SIZE))
