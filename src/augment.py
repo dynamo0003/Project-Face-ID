@@ -7,28 +7,22 @@ import torch
 from PIL import Image
 from torchvision import transforms
 from torchvision.transforms.functional import to_pil_image
+import torchvision.transforms.functional as F
 
-class CustomTransform:
-    def __init__(self, param1, param2):
-        self.param1 = param1
-        self.param2 = param2
+class CustomAffine:
+    def __init__(self, translate, scale, shear):
+        self. angle = 0
+        self.translate = translate
+        self.scale = scale
+        self.shear = shear
 
     def __call__(self, img):
-        # TODO LOGIC
-        # For demonstration purposes
-        print(f"Applying custom transform with param1: {self.param1} and param2: {self.param2}")
-        return img
+        return F.affine(img, self.angle, self.translate, self.scale, self.shear)
 
 IMAGE_SIZE = (224, 224)
 
 # TODO add more transforms
 # TODO potentially add pickle array functionality
-
-custom_transform = CustomTransform(param1=10, param2=20)
-transform = transforms.Compose([
-    custom_transform,
-    transforms.ToTensor()
-])
 
 def get_transforms(skip_extra=False):
     t = transforms
@@ -38,7 +32,7 @@ def get_transforms(skip_extra=False):
         # Flip horizontally (50% chance)
         trans.append(t.RandomHorizontalFlip())
         # Grayscale (12.5% chance)
-        if not random.randint(0, 7) == 0:
+        if random.randint(0, 7) == 0:
             trans.append(t.Grayscale(num_output_channels=1))
         # Hue (12.5% chance)
         if random.randint(0, 7) == 0:
@@ -54,10 +48,9 @@ def get_transforms(skip_extra=False):
             trans.append(t.CenterCrop(IMAGE_SIZE))
         # Rotate randomly by 0 - 20°
         trans.append(t.RandomRotation(random.randint(0, 20), fill=128))
-        # Custom transform test (12.5%)
+        # Custom affine and shear (12.5%)
         if random.randint(0, 7) == 0:
-            trans.append(CustomTransform(custom_transform.param1, custom_transform.param2))
-
+            trans.append(CustomAffine(translate=(10, 10), scale=1, shear=random.randint(-10, 10)))
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
