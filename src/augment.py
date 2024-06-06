@@ -63,6 +63,17 @@ class CustomGaussianBlur:
     def __call__(self, img):
         return F.gaussian_blur(img, self.kernel_size, self.sigma)
 
+class CustomRandomNoise:
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, img):
+        noise = torch.randn_like(img) * self.std + self.mean
+        noisy_img = img + noise
+        noisy_img = torch.clamp(noisy_img, 0, 1)
+        return noisy_img
+
 IMAGE_SIZE = (224, 224)
 
 # TODO potentially add pickle array functionality
@@ -100,6 +111,9 @@ def get_transforms(skip_extra=False):
         # Custom gaussian blur (1%)
         if random.randint(0, 99) == 0:
             trans.append(CustomGaussianBlur(kernel_size=5))
+        # Custom gaussian blur (1%)
+        if random.randint(0, 99) == 0:
+            trans.append(CustomRandomNoise(mean=0, std=0.05))
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
