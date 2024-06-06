@@ -26,6 +26,9 @@ def get_transforms(skip_extra=False):
         # Hue (66% chance)
         if random.randint(0, 2):
             trans.append(t.ColorJitter(hue=0.1))
+        # Brigthness, contrast, saturation (1-3 times)
+        for _ in range(random.randint(0, 2)):
+            trans.append(t.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5))
 
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
