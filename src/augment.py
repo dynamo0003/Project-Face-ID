@@ -8,18 +8,27 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.transforms.functional import to_pil_image
 
-class CustomTransform(transforms.Transform):
-    def __init__(self, transform_func):
-        super().__init__()
-        self.transform_func = transform_func
+class CustomTransform:
+    def __init__(self, param1, param2):
+        self.param1 = param1
+        self.param2 = param2
 
     def __call__(self, img):
-        return self.transform_func(img)
+        # TODO LOGIC
+        # For demonstration purposes
+        print(f"Applying custom transform with param1: {self.param1} and param2: {self.param2}")
+        return img
 
 IMAGE_SIZE = (224, 224)
 
 # TODO add more transforms
 # TODO potentially add pickle array functionality
+
+custom_transform = CustomTransform(param1=10, param2=20)
+transform = transforms.Compose([
+    custom_transform,
+    transforms.ToTensor()
+])
 
 def get_transforms(skip_extra=False):
     t = transforms
@@ -28,11 +37,11 @@ def get_transforms(skip_extra=False):
     if not skip_extra:
         # Flip horizontally (50% chance)
         trans.append(t.RandomHorizontalFlip())
-        # Grayscale (10% chance)
-        if not random.randint(0, 4):
+        # Grayscale (12.5% chance)
+        if not random.randint(0, 7) == 0:
             trans.append(t.Grayscale(num_output_channels=1))
-        # Hue (10% chance)
-        if random.randint(0, 4):
+        # Hue (12.5% chance)
+        if random.randint(0, 7) == 0:
             trans.append(t.ColorJitter(hue=0.1))
         # Brigthness, contrast, saturation (1-3 times)
         for _ in range(random.randint(0, 2)):
@@ -44,7 +53,10 @@ def get_transforms(skip_extra=False):
         else:
             trans.append(t.CenterCrop(IMAGE_SIZE))
         # Rotate randomly by 0 - 20°
-        trans.append(t.RandomRotation(random.randint(5, 20), fill=128))
+        trans.append(t.RandomRotation(random.randint(0, 20), fill=128))
+        # Custom transform test (12.5%)
+        if random.randint(0, 7) == 0:
+            trans.append(CustomTransform(custom_transform.param1, custom_transform.param2))
 
 
     trans.append(t.Resize(IMAGE_SIZE))
