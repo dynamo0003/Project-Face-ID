@@ -23,13 +23,22 @@ def authenticate():
     if img.filename == '':
         return jsonify({"error": "No image path found"}), 400
     
+    if 'user' not in request.files:
+        return jsonify({"error": "No user part in the request"}), 400
+    
+    user = request.files['user']
+    
     img.save(temp_image_name)
     abs_img_path = os.path.abspath(temp_image_name)
 
     result = model.eval(abs_img_path)
     os.remove(abs_img_path)
 
-    return jsonify({"result": result})
+    if result == user:
+        return jsonify({"result": 1})
+    else:
+        return jsonify({"result": 0})
 
 if __name__ == '__main__':
-    pass
+    # Add debug=True for debugging
+    app.run()
