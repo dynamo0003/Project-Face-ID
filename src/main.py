@@ -12,8 +12,8 @@ def authenticate():
     model_path = "Project-Face-ID/models/model.pt"
     temp_image_name = "temp_img.png"
 
-    model = Model()
-    model.load(model_path)
+    #model = Model()
+    #model.load(model_path)
 
     if 'image' not in request.files:
         return jsonify({"error": "No image part in the request"}), 400
@@ -31,14 +31,16 @@ def authenticate():
     img.save(temp_image_name)
     abs_img_path = os.path.abspath(temp_image_name)
 
-    result = model.eval(abs_img_path)
+    #result = model.eval(abs_img_path)
     os.remove(abs_img_path)
 
-    if result == user:
-        return jsonify({"result": 1})
-    else:
-        return jsonify({"result": 0})
+    #if result == user:
+    #    return jsonify({"result": 1})
+    #else:
+    #    return jsonify({"result": 0})
+
+    return jsonify({"result": "susy bakka"})
 
 if __name__ == '__main__':
     # Add debug=True for debugging
-    app.run()
+    app.run(debug=True)
