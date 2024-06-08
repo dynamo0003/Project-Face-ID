@@ -23,10 +23,10 @@ def authenticate():
     if img.filename == '':
         return jsonify({"error": "No image path found"}), 400
     
-    if 'user' not in request:
+    if 'user' not in request.form:
         return jsonify({"error": "No user part in the request"}), 400
     
-    user = request['user']
+    user = request.form['user']
     
     img.save(temp_image_name)
     abs_img_path = os.path.abspath(temp_image_name)
