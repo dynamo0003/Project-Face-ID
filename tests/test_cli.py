@@ -68,3 +68,17 @@ def test_cli_eval_help():
     assert "-C, --cpu              Use CPU" in out.output
     assert "-w, --warnings         Show warnings" in out.output
     assert "-h, --help             Show this message and exit." in out.output
+
+
+def test_cli_test_help():
+    out = CliRunner().invoke(cli.test, ["-h"])
+    assert out.exit_code == 0
+    assert "Usage: test [OPTIONS]" in out.output
+    assert "Test the accuraccy of a trained model" in out.output
+    assert "Options:" in out.output
+    assert "-m, --model TEXT       Path to trained model  [required]" in out.output
+    assert "-d, --dataset TEXT     Path to dataset folder  [required]" in out.output
+    assert "-c, --classes INTEGER  Number of classes (Default: 2)" in out.output
+    assert "-C, --cpu              Use CPU" in out.output
+    assert "-w, --warnings         Show warnings" in out.output
+    assert "-h, --help             Show this message and exit." in out.output
