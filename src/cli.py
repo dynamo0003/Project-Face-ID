@@ -3,6 +3,7 @@ import platform
 import warnings as warns
 
 import click
+from cv2 import threshold
 
 
 @click.group(
@@ -136,14 +137,9 @@ def eval(model, image, classes, cpu, warnings):
         warns.filterwarnings("ignore")
     fr_model = Model(classes, cpu)
     fr_model.load(model)
+    choice, threshold, probs = fr_model.eval(image)
 
-    choice, probs = fr_model.eval(image)
-    probs_norm = [p - min(probs) for p in probs]
-    del probs_norm[choice]
-    threshold = sum(probs_norm) / len(probs_norm) * 2
-    print(f"Threshold: {threshold:.3f}")
-
-    print(f"Probabilities:")
+    print(f"Threshold: {threshold:.3f}\nProbabilities:")
     for i, p in enumerate(probs):
         if platform.system() == "Linux":
             if i == choice:
