@@ -73,14 +73,11 @@ class Model:
                 break
             loss_avg = 0
 
-    def eval(self, path: str):
-        print("Evaluating image")
+    def eval(self, path: str) -> tuple[int, list[float]]:
+        """Returns a tuple with the evaluated class and a list of probabilities for all classes"""
         self.model.eval()
-
         with torch.no_grad():
             image = Image.open(path).convert("RGB")
             image = transforms.ToTensor()(image).unsqueeze(0).to(self.device)
             result = self.model(image)
-
-        print(result)
-        return torch.argmax(result)
+        return int(torch.argmax(result).item()), result.flatten().tolist()

@@ -1,3 +1,4 @@
+import platform
 import warnings as warns
 
 import click
@@ -126,7 +127,15 @@ def eval(model, image, classes, cpu, warnings):
         warns.filterwarnings("ignore")
     fr_model = Model(classes, cpu)
     fr_model.load(model)
-    fr_model.eval(image)
+
+    print("Evaluating image")
+    evaluation = fr_model.eval(image)
+
+    print(f"Probabilities:")
+    for i in range(len(evaluation[1])):
+        if platform.system() == "Linux":
+            print("\033[92m" if i == evaluation[0] else "\033[91m", end="")
+        print(f"{i}: {evaluation[1][i]}")
 
 
 if __name__ == "__main__":
