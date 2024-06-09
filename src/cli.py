@@ -58,7 +58,7 @@ def cli():
     "-L",
     "--loss-goal",
     type=float,
-    help="If the model reaches this loss when training, it will stop",
+    help="If this loss is reached when training, it stops",
     default=None,
 )
 @click.option(

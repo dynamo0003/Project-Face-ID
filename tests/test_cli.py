@@ -42,6 +42,7 @@ def test_cli_train_help():
     assert "-e, --epochs INTEGER       Number of epochs (Default: 10)" in out.output
     assert "-b, --batch-size INTEGER   Batch size (Default: 100)" in out.output
     assert "-l, --learning-rate FLOAT  Learning rate (Default: 0.001)" in out.output
+    assert "-L, --loss-goal FLOAT      If this loss is reached when training, it stops" in out.output
     assert "-C, --cpu                  Use CPU" in out.output
     assert "-w, --warnings             Show warnings" in out.output
     assert "-h, --help                 Show this message and exit." in out.output
