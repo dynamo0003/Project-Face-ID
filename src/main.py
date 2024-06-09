@@ -17,7 +17,7 @@ def authenticate():
 
     #model_path = os.path.join("/models", f"{user}.pt")
     model_path = f"/models/{user}.pt"
-    model = Model(classes=4)
+    model = Model(classes=2)
 
     if 'purpose' not in request.form:
         return jsonify({"error": "No purpose part in the request"}), 400
