@@ -137,14 +137,23 @@ def eval(model, image, classes, cpu, warnings):
     fr_model = Model(classes, cpu)
     fr_model.load(model)
 
-    print("Evaluating image", end="")
-    evaluation = fr_model.eval(image)
+    choice, probs = fr_model.eval(image)
+    probs_norm = [p - min(probs) for p in probs]
+    del probs_norm[choice]
+    threshold = sum(probs_norm) / len(probs_norm) * 2
+    print(f"Threshold: {threshold:.3f}")
 
-    print(f"\rProbabilities:  ")
-    for i in range(len(evaluation[1])):
+    print(f"Probabilities:")
+    for i, p in enumerate(probs):
         if platform.system() == "Linux":
-            print("\033[92m" if i == evaluation[0] else "\033[91m", end="")
-        print(f"{i}: {evaluation[1][i]}")
+            if i == choice:
+                if p >= threshold:
+                    print("\033[32m", end="")  # Green
+                else:
+                    print("\033[33m", end="")  # Yellow
+            else:
+                print("\033[31m", end="")  # Red
+        print(f"{i}: {p:.3f}")
 
 
 @cli.command(

@@ -40,9 +40,7 @@ class Model:
         learning_rate: float,
         loss_goal: Optional[float],
     ):
-        print(f"Training model")
         self.model.train()
-
         dataset = ImageFolder(path, transform=transforms.ToTensor())
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         criterion = nn.CrossEntropyLoss()
