@@ -116,6 +116,16 @@ def get_transforms(skip_extra=False):
     trans.append(t.Resize(IMAGE_SIZE))
     return transforms.Compose(trans)
 
+def augment(input_path, save_path, count): 
+    images = os.listdir(input_path)
+
+    for i in range(count):
+        image = Image.open(os.path.join(input_path, random.choice(images)))
+        image = transforms.ToTensor()(image.convert("RGB")).to(device)
+        image = to_pil_image(get_transforms()(image))
+        image.save(os.path.join(save_path, f"aug_{i:04d}.png"))
+        stdout.flush()
+
 
 if __name__ == "__main__":
     if len(argv) < 4:

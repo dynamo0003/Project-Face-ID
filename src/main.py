@@ -1,5 +1,6 @@
 from model import Model
 from flask import Flask, request, jsonify
+from augment import augment
 import os
 import cv2
 
@@ -13,7 +14,8 @@ def authenticate():
         return jsonify({"error": "No user part in the request"}), 400
     user = request.form['user']
 
-    model_path = f"Project-Face-ID/models/{user}.pt"
+    model_path = os.path.join("/models", f"{user}.pt")
+    #model_path = f"/models/{user}.pt"
     model = Model(classes=4)
 
     if 'purpose' not in request.form:
@@ -31,19 +33,19 @@ def authenticate():
             if vid.filename == '':
                 return jsonify({"error": "No image path found"}), 400
 
-            temp_video_name = "temp_img.png"
+            temp_video_name = "temp_vid.mp4"
             vid.save(temp_video_name)
             abs_vid_path = os.path.abspath(temp_video_name)
 
             cap = cv2.VideoCapture(abs_vid_path)
             frame_count = 0
+            training_images_path = os.path.join("Project-Face-ID", "trainingImages")
 
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
                     break
                 
-                training_images_path = "Project-Face-ID/trainingImages/"
                 frame_filename = os.path.join(training_images_path, f"frame_{frame_count:04d}.png")
                 cv2.imwrite(frame_filename, frame)
                 frame_count += 1
@@ -51,8 +53,12 @@ def authenticate():
             cap.release()
             os.remove(abs_vid_path)
 
-            model.train()
+            augment(training_images_path, training_images_path, 1000)
+
+            model.train(training_images_path, 10, 32, 0.001)
             model.save(model_path)
+
+            # Delete all training images
 
             return jsonify({"result": 1})
     elif purpose == "auth":
