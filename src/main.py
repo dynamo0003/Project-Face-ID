@@ -2,7 +2,8 @@ from model import Model
 from flask import Flask, request, jsonify
 from augment import augment
 import os
-import cv2
+from moviepy.editor import VideoFileClip
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -26,7 +27,6 @@ def authenticate():
         if os.path.exists(model_path):
             return jsonify({"error": "Model for this user already exists, cannot train a new one"}), 400
         else:
-            
             if 'video' not in request.files:
                 return jsonify({"error": "No video part in the request"}), 400
             vid = request.files['video']
@@ -38,20 +38,20 @@ def authenticate():
             vid.save(temp_video_name)
             abs_vid_path = os.path.abspath(temp_video_name)
 
-            cap = cv2.VideoCapture(abs_vid_path)
+            clip = VideoFileClip(abs_vid_path)
             frame_count = 0
             training_images_path = os.path.join("Project-Face-ID", "trainingImages")
 
-            while cap.isOpened():
-                ret, frame = cap.read()
-                if not ret:
-                    break
-                
+            if not os.path.exists(training_images_path):
+                os.makedirs(training_images_path)
+
+            for frame in clip.iter_frames():
                 frame_filename = os.path.join(training_images_path, f"frame_{frame_count:04d}.png")
-                cv2.imwrite(frame_filename, frame)
+                frame_image = Image.fromarray(frame)
+                frame_image.save(frame_filename)
                 frame_count += 1
 
-            cap.release()
+            clip.close()
             os.remove(abs_vid_path)
 
             augment(training_images_path, training_images_path, 1000)
@@ -64,8 +64,8 @@ def authenticate():
                 os.remove(os.path.join(training_images_path, file))
             
 
-            #return jsonify({"result": 1})
-            return jsonify({"error": "This feature is not yet implemented"}), 400
+            return jsonify({"result": 1})
+            # return jsonify({"error": "This feature is not yet implemented"}), 400
     elif purpose == "auth":
         if not os.path.exists(model_path):
             return jsonify({"error": "There is no model trained for this user"}), 400
