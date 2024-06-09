@@ -1,8 +1,8 @@
 from model import Model
 from flask import Flask, request, jsonify
-#from augment import augment
+from augment import augment
 import os
-import cv2
+#import cv2
 
 app = Flask(__name__)
 
@@ -26,6 +26,7 @@ def authenticate():
         if os.path.exists(model_path):
             return jsonify({"error": "Model for this user already exists, cannot train a new one"}), 400
         else:
+            '''
             if 'video' not in request.files:
                 return jsonify({"error": "No video part in the request"}), 400
             vid = request.files['video']
@@ -53,7 +54,7 @@ def authenticate():
             cap.release()
             os.remove(abs_vid_path)
 
-            #augment(training_images_path, training_images_path, 1000)
+            augment(training_images_path, training_images_path, 1000)
 
             model.train(training_images_path, 10, 32, 0.001)
             model.save(model_path)
@@ -61,8 +62,10 @@ def authenticate():
             # Delete all training images
             for file in os.listdir(training_images_path):
                 os.remove(os.path.join(training_images_path, file))
+            '''
 
-            return jsonify({"result": 1})
+            #return jsonify({"result": 1})
+            return jsonify({"error": "This feature is not yet implemented"}), 400
     elif purpose == "auth":
         if not os.path.exists(model_path):
             return jsonify({"error": "There is no model trained for this user"}), 400
