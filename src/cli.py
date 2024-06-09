@@ -1,3 +1,4 @@
+import os
 import platform
 import warnings as warns
 
@@ -75,7 +76,15 @@ def cli():
     is_flag=True,
 )
 def train(
-    model, dataset, classes, epochs, batch_size, learning_rate, loss_goal, cpu, warnings
+    model,
+    dataset,
+    classes,
+    epochs,
+    batch_size,
+    learning_rate,
+    loss_goal,
+    cpu,
+    warnings,
 ):
     from model import Model
 
@@ -128,14 +137,66 @@ def eval(model, image, classes, cpu, warnings):
     fr_model = Model(classes, cpu)
     fr_model.load(model)
 
-    print("Evaluating image")
+    print("Evaluating image", end="")
     evaluation = fr_model.eval(image)
 
-    print(f"Probabilities:")
+    print(f"\rProbabilities:  ")
     for i in range(len(evaluation[1])):
         if platform.system() == "Linux":
             print("\033[92m" if i == evaluation[0] else "\033[91m", end="")
         print(f"{i}: {evaluation[1][i]}")
+
+
+@cli.command(
+    help="Test the accuraccy of a trained model",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+@click.option(
+    "-m",
+    "--model",
+    help="Path to trained model",
+    required=True,
+)
+@click.option(
+    "-d",
+    "--dataset",
+    help="Path to dataset folder",
+    required=True,
+)
+@click.option(
+    "-c",
+    "--classes",
+    help="Number of classes (Default: 2)",
+    default=2,
+)
+@click.option(
+    "-C",
+    "--cpu",
+    help="Use CPU",
+    is_flag=True,
+)
+@click.option(
+    "-w",
+    "--warnings",
+    help="Show warnings",
+    is_flag=True,
+)
+def test(model, dataset, classes, cpu, warnings):
+    from model import Model
+
+    if not warnings:
+        warns.filterwarnings("ignore")
+    fr_model = Model(classes, cpu)
+    fr_model.load(model)
+
+    for i, dir in enumerate(os.listdir(dataset)):
+        count = 0
+        imgs = os.listdir(os.path.join(dataset, dir))
+        for j, img in enumerate(imgs):
+            if fr_model.eval(os.path.join(dataset, dir, img))[0] == i:
+                count += 1
+            print(f"\r{dir} ({i}): {j}/{len(imgs)}", end="")
+        print(f"\r{dir} ({i}): {count}/{len(imgs)} ({count / len(imgs) * 100:.0f}%)")
 
 
 if __name__ == "__main__":
