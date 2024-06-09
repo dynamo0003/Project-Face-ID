@@ -81,16 +81,16 @@ def authenticate():
 
             temp_image_name = "temp_img.png"
             img.save(temp_image_name)
-            abs_img_path = os.path.abspath(temp_image_name)
+            #abs_img_path = os.path.abspath(temp_image_name)
 
-            choice, threshold, probs = model.eval(abs_img_path)
-            os.remove(abs_img_path)
+            choice, threshold, probs = model.eval(temp_image_name)
 
             for i, p in enumerate(probs):
                 if i == choice:
                     if p >= threshold:
                         return jsonify({"result": 1}) # Image class was found
 
+            os.remove(temp_image_name)
             return jsonify({"result": 0}) # Image class was not found
     else:
         return jsonify({"error": "The purpose is invalid"}), 400
