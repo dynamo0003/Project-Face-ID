@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -6,16 +8,6 @@ from torch.types import Device
 from torch.utils.data import DataLoader
 from torchvision import models
 from torchvision.datasets import ImageFolder
-
-transform = transforms.Compose(
-    [
-        transforms.Pad(4),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(20),
-        transforms.RandomCrop(32),
-        transforms.ToTensor(),
-    ]
-)
 
 
 class Model:
@@ -40,11 +32,18 @@ class Model:
         print(f"Loading trained model from {path}")
         self.model.load_state_dict(torch.load(path))
 
-    def train(self, path: str, epochs: int, batch_size: int, learning_rate: float):
+    def train(
+        self,
+        path: str,
+        epochs: int,
+        batch_size: int,
+        learning_rate: float,
+        loss_goal: Optional[float],
+    ):
         print(f"Training model")
         self.model.train()
 
-        dataset = ImageFolder(path, transform=transform)
+        dataset = ImageFolder(path, transform=transforms.ToTensor())
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
@@ -59,7 +58,7 @@ class Model:
                 # Forward pass
                 outputs = self.model(images)
                 loss = criterion(outputs, labels)
-                loss_avg += loss
+                loss_avg += loss.item()
 
                 # Backward pass
                 optimizer.zero_grad()
@@ -70,7 +69,7 @@ class Model:
 
             loss_avg /= len(loader)
             print(f"\r[{epoch + 1}/{epochs}]: {loss_avg}")
-            if round(loss_avg, 1) <= 0.1:
+            if loss_goal is not None and loss_avg <= loss_goal:
                 break
             loss_avg = 0
 
@@ -81,4 +80,7 @@ class Model:
         with torch.no_grad():
             image = Image.open(path).convert("RGB")
             image = transforms.ToTensor()(image).unsqueeze(0).to(self.device)
-            print(self.model(image))
+            result = self.model(image)
+
+        print(result)
+        return torch.argmax(result)

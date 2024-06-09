@@ -55,6 +55,13 @@ def cli():
     default=0.001,
 )
 @click.option(
+    "-L",
+    "--loss-goal",
+    type=float,
+    help="If the model reaches this loss when training, it will stop",
+    default=None,
+)
+@click.option(
     "-C",
     "--cpu",
     help="Use CPU",
@@ -66,13 +73,15 @@ def cli():
     help="Show warnings",
     is_flag=True,
 )
-def train(model, dataset, classes, epochs, batch_size, learning_rate, cpu, warnings):
+def train(
+    model, dataset, classes, epochs, batch_size, learning_rate, loss_goal, cpu, warnings
+):
     from model import Model
 
     if not warnings:
         warns.filterwarnings("ignore")
     fr_model = Model(classes, cpu)
-    fr_model.train(dataset, epochs, batch_size, learning_rate)
+    fr_model.train(dataset, epochs, batch_size, learning_rate, loss_goal)
     fr_model.save(model)
 
 
