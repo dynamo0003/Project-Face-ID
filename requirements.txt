@@ -4,3 +4,4 @@ pytest
 torch
 torchvision
 flask
+pillow
