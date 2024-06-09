@@ -1,6 +1,6 @@
 from model import Model
 from flask import Flask, request, jsonify
-from augment import augment
+#from augment import augment
 import os
 import cv2
 
@@ -53,7 +53,7 @@ def authenticate():
             cap.release()
             os.remove(abs_vid_path)
 
-            augment(training_images_path, training_images_path, 1000)
+            #augment(training_images_path, training_images_path, 1000)
 
             model.train(training_images_path, 10, 32, 0.001)
             model.save(model_path)
