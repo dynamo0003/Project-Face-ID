@@ -3,7 +3,6 @@ import platform
 import warnings as warns
 
 import click
-from cv2 import threshold
 
 
 @click.group(
