@@ -59,6 +59,8 @@ def authenticate():
             model.save(model_path)
 
             # Delete all training images
+            for file in os.listdir(training_images_path):
+                os.remove(os.path.join(training_images_path, file))
 
             return jsonify({"result": 1})
     elif purpose == "auth":
