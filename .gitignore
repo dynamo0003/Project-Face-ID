@@ -6,5 +6,5 @@ virtualenv/
 .virtualenv/
 
 datasets/
-models/
+# models/
 .idea/workspace.xml

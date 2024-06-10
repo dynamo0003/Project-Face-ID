@@ -193,7 +193,7 @@ def test(model, dataset, classes, cpu, warnings):
     fr_model = Model(classes, cpu)
     fr_model.load(model)
 
-    for i, dir in enumerate(os.listdir(dataset)):
+    for i, dir in enumerate(sorted(os.listdir(dataset))):
         count = 0
         imgs = os.listdir(os.path.join(dataset, dir))
         for j, img in enumerate(imgs):
