@@ -11,12 +11,15 @@ app = Flask(__name__)
 # Current path "http_://127.0.0.1:5000/face-recognition/authenticate"
 @app.route('/face-recognition/authenticate', methods=['POST'])
 def authenticate():
+
+    PROJECT_ROOT = os.getenv('PROJECT_ROOT', os.path.dirname(__file__))
     if 'user' not in request.form:
         return jsonify({"error": "No user part in the request"}), 400
     user = request.form['user']
 
     #model_path = os.path.join("/models", f"{user}.pt")
-    model_path = f"/models/{user}.pt"
+    #model_path = f"/models/{user}.pt"
+    model_path = os.path.join(PROJECT_ROOT, "models", f"{user}.pt")
     model = Model(classes=2)
 
     if 'purpose' not in request.form:
