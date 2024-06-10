@@ -15,8 +15,8 @@ def authenticate():
         return jsonify({"error": "No user part in the request"}), 400
     user = request.form['user']
 
-    #model_path = os.path.join("/models", f"{user}.pt")
-    model_path = f"/models/{user}.pt"
+    model_path = os.path.join("Project-Face-ID", "models", f"{user}.pt")
+    #model_path = f"/models/{user}.pt"
     model = Model(classes=2)
     print(model_path)
 
