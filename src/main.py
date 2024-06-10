@@ -68,31 +68,28 @@ def authenticate():
             return jsonify({"result": 1})
             # return jsonify({"error": "This feature is not yet implemented"}), 400
     elif purpose == "auth":
-        if not os.path.exists(model_path):
-            return jsonify({"error": f"There is no model trained for this user: {model_path}"}), 400
-        else:
-            model.load(model_path)
+        model.load(model_path)
 
-            if 'image' not in request.files:
-                return jsonify({"error": "No image part in the request"}), 400
-            img = request.files['image']
+        if 'image' not in request.files:
+            return jsonify({"error": "No image part in the request"}), 400
+        img = request.files['image']
 
-            if img.filename == '':
-                return jsonify({"error": "No image path found"}), 400
+        if img.filename == '':
+            return jsonify({"error": "No image path found"}), 400
 
-            temp_image_name = "temp_img.png"
-            img.save(temp_image_name)
-            #abs_img_path = os.path.abspath(temp_image_name)
+        temp_image_name = "temp_img.png"
+        img.save(temp_image_name)
+        #abs_img_path = os.path.abspath(temp_image_name)
 
-            choice, threshold, probs = model.eval(temp_image_name)
+        choice, threshold, probs = model.eval(temp_image_name)
 
-            for i, p in enumerate(probs):
-                if i == choice:
-                    if p >= threshold:
-                        return jsonify({"result": 1}) # Image class was found
+        for i, p in enumerate(probs):
+            if i == choice:
+                if p >= threshold:
+                    return jsonify({"result": 1}) # Image class was found
 
-            os.remove(temp_image_name)
-            return jsonify({"result": 0}) # Image class was not found
+        os.remove(temp_image_name)
+        return jsonify({"result": 0}) # Image class was not found
     else:
         return jsonify({"error": "The purpose is invalid"}), 400
 
