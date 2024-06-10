@@ -69,7 +69,7 @@ def authenticate():
             # return jsonify({"error": "This feature is not yet implemented"}), 400
     elif purpose == "auth":
         if not os.path.exists(model_path):
-            return jsonify({"error": "There is no model trained for this user"}), 400
+            return jsonify({"error": f"There is no model trained for this user: {model_path}"}), 400
         else:
             model.load(model_path)
 
