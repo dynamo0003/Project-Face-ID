@@ -15,9 +15,9 @@ def authenticate():
         return jsonify({"error": "No user part in the request"}), 400
     user = request.form['user']
 
-    model_path = os.path.join("Project-Face-ID", "models", f"{user}.pt")
+    model_path = os.path.join("models", f"{user}.pt")
     #model_path = f"/models/{user}.pt"
-    model = Model(classes=2)
+    model = Model(classes=4)
     print(model_path)
 
     if 'purpose' not in request.form:
@@ -41,7 +41,7 @@ def authenticate():
 
             clip = VideoFileClip(abs_vid_path)
             frame_count = 0
-            training_images_path = os.path.join("Project-Face-ID", "trainingImages")
+            training_images_path = os.path.join("trainingImages")
 
             if not os.path.exists(training_images_path):
                 os.makedirs(training_images_path)
